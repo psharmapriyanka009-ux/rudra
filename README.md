@@ -1,3 +1,4 @@
-"# Systems Requirements & Configuration - Live Challenge" 
-"**Candidate:** Priyanka Sharma" 
-"**Tool:** Git Local + Markdown only" 
+# Systems Requirements & Configuration - Live Challenge
+
+**Candidate:** Priyanka Sharma  
+**Tool:** Git Local + Markdown only
