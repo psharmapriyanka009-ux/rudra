@@ -1,0 +1,153 @@
+%% ==============================================================================
+%% PROJECT: RudraEdge RE-T1 (Spectra) / Project Rudra-Tactical
+%% DOCUMENT: RE_T1_CROSS_DOMAIN_ARCHITECTURE.mmd
+%% CLASSIFICATION: Commercial-in-Confidence / Technical Reference
+%% STATUS: PRELIMINARY ARCHITECTURE - SUBJECT TO VERIFICATION
+%% PRIMARY SOURCE: REA-T1-OVERVIEW-2026-V1.0 (Pages 1-12) & REA/2026/RE-T1/TRAIN-001/ADD-03
+%% AUTHOR / CADRE: Priyanka Sharma, Systems Requirements & Configuration Engineer
+%% DATE: 10 October 2026
+%% ==============================================================================
+
+flowchart TB
+    %% Title and Status Banner
+    subgraph HEADER ["SYSTEM ARCHITECTURE BASELINE (PRELIMINARY ARCHITECTURE - SUBJECT TO VERIFICATION)"]
+        direction TB
+        TITLE_NODE["RudraEdge RE-T1 (Spectra) Multi-Domain Tactical UAV<br/>8-Layer Physical-Electromagnetic-Cyber Layer Fusion (PECLF)<br/>Reference: REA-T1-OVERVIEW-2026-V1.0"]
+    end
+
+    %% External Operational Entities
+    subgraph EXT_BOUNDARY ["External Operational Boundaries (Ground Segment)"]
+        direction LR
+        EXT_OGT["[STUDY-EXT-01] Optical Ground Terminal (OGT)<br/>Line-of-Sight Laser Reception & PAT Tracking"]
+        EXT_GCS["[STUDY-EXT-02] GCS Encrypted SDR RF Terminal<br/>Frequency-Hopping Backup Telemetry & C2"]
+    end
+
+    %% Layer A: Physical Perception & Transducers
+    subgraph DOM_PERCEPTION ["Layer A: Physical Perception & Sensors (Hardware Substrate)"]
+        direction TB
+        MOD_02["[MOD-02] Stabilized Multi-Spectral Gimbal<br/>Daylight CMOS + LWIR Bolometer<br/>(Features 5 & 13)"]
+        NODE_LIDAR["[STUDY-NODE-11] Micro-LiDAR Altimeter<br/>Terrain Clearance & Optical Ranging"]
+        NODE_GPR["[STUDY-NODE-12] Micro-Ground Penetrating Radar<br/>Subsurface Target & Anomaly Imaging"]
+        NODE_MIC["[STUDY-NODE-13] 4-Element Acoustic Array<br/>Impulse Noise / Gunfire Transducers"]
+        NODE_CBRN["[STUDY-NODE-14] Digital CBRN Sniffer<br/>Airborne Chemical / Hazard Detector"]
+        NODE_IMU["[STUDY-NODE-16] High-Rate Tactical IMU<br/>Angular Rates & Linear Accelerations"]
+        NODE_SDR_FE["[STUDY-NODE-15] Wideband SDR RF Front-End<br/>400 MHz - 6 GHz Antenna Ingress"]
+    end
+
+    %% Layer C: Heterogeneous Edge Compute Fabric
+    subgraph DOM_COMPUTE ["Layer C: Heterogeneous Edge Compute Fabric (Zero-Cloud Substrate)"]
+        direction TB
+        NODE_COMPUTE_HW["[STUDY-NODE-09] Heterogeneous Compute Substrate<br/>Multi-Core CPU / GPU / NPU / DSP<br/>Hardened Linux + POSIX RT Kernel"]
+        MOD_03["[MOD-03] Edge Intelligence Engine (EDGE-AI)<br/>TensorRT INT8 Segmentation & Change CNNs<br/>(Features 8, 15, 17, 19)"]
+        MOD_04["[MOD-04] EW & Acoustic Tracking (EW-DSP)<br/>RF Spectrum Occupancy & Acoustic TDoA<br/>(Features 9 & 11)"]
+    end
+
+    %% Layer B & 3: Navigation, Middleware & Autonomy
+    subgraph DOM_MIDDLEWARE ["Layer B / 3: Core Software, Navigation & Autonomy"]
+        direction TB
+        MOD_01["[MOD-01] GNSS-Denied Navigation (VIO-NAV)<br/>Visual-Inertial Odometry + DEM Terrain Matching<br/>(Feature 1)"]
+        NODE_ROS2["[STUDY-NODE-08] Swadeshi ROS 2 Middleware Core<br/>Mission Sequencing, Inter-Process Comms<br/>& Micro-XRCE-DDS Host Agent"]
+    end
+
+    %% Layer 2 & Avionics: Flight Control & Real-Time Firmwares
+    subgraph DOM_AVIONICS ["Layer 2: Embedded Real-Time Avionics Subsystem"]
+        direction TB
+        NODE_PX4["[STUDY-NODE-07] PX4 Autopilot Flight Controller<br/>Dedicated 32-Bit Automotive/Aerospace MCU (STM32)<br/>Inner Rate Loops, EKF & Failsafe Watchdog"]
+    end
+
+    %% Layer E: Communications & Telemetry
+    subgraph DOM_COMMS ["Layer E: Jam-Resistant Secure Communications"]
+        direction TB
+        MOD_05["[MOD-05] Directional FSO Transceiver (FSO-COMM)<br/>High-Bandwidth Narrow-Beam Laser Link<br/>(Feature 10)"]
+    end
+
+    %% Layer G & 1: Propulsion, Effectors & Mechanical Mechatronics
+    subgraph DOM_ACTUATION ["Layer G & 1: Actuation, Propulsion & Effectors"]
+        direction TB
+        NODE_PROP["[STUDY-NODE-17] Cold-Weather Electric Propulsion<br/>High-Thrust Brushless Motors & ESCs (-20°C)"]
+        NODE_SERVO["[STUDY-NODE-20] Flight Control Servo Fins<br/>Aerodynamic Control Surface Actuation"]
+        MOD_06["[MOD-06] Precision Cargo Drop Pod (PAYLOAD-POD)<br/>Wind-Compensated Ballistic Release<br/>(Features 6 & 7)"]
+        NODE_AIRFRAME["[STUDY-NODE-18] Faceted Low-RCS Composite Airframe<br/>Carbon Monocoque & Self-Healing Matrix"]
+        NODE_PMU["[STUDY-NODE-19] Low-Temp Insulated Battery & PMU<br/>Multi-Rail DC Power & Thermal Management"]
+    end
+
+    %% Layer H: Cybersecurity & Silicon Integrity
+    subgraph DOM_SECURITY ["Layer H: Cybersecurity & Data Sovereignty"]
+        direction TB
+        NODE_ROT["[STUDY-NODE-10] Hardware Root of Trust & Wipe Engine<br/>Cryptographic Boot Keys & Zero-Trace Sanitization"]
+    end
+
+    %% -------------------------------------------------------------------------
+    %% DOCUMENTED INTERFACE CONNECTIONS & PROTOCOLS
+    %% -------------------------------------------------------------------------
+
+    %% Perception to Compute / AI
+    MOD_02 -->|"MIPI-CSI Gen3 (Multi-lane)<br/>DMA Direct Memory Access<br/>Raw YUV/RGB/14-bit Thermal"| MOD_03
+    NODE_LIDAR -->|"High-Speed Serial / SPI<br/>Direct Range Data"| MOD_01
+    NODE_GPR -->|"High-Speed SPI / USB 3.0<br/>16-bit IQ Samples (FIFO Ring)"| MOD_04
+    NODE_MIC -->|"High-Speed SPI / USB 3.0<br/>Audio PDM Arrays"| MOD_04
+    NODE_CBRN -->|"I2C / UART Digital Bus<br/>Hazard Concentration Flags"| NODE_ROS2
+    NODE_SDR_FE -->|"Gigabit Ethernet / PCIe<br/>VITA 49 Transport Packets<br/>[EMI Gasket Shielded]"| MOD_04
+
+    %% IMU Dual Distribution
+    NODE_IMU -->|"Direct SPI Bus<br/>High-Rate Raw Gyro/Accel"| NODE_PX4
+    NODE_IMU -.->|"High-Speed Synchronized Bus<br/>VIO Inertial Fusion [Unresolved Physical Route]"| MOD_01
+
+    %% Compute Internal Data Exchange
+    MOD_03 <-->|"POSIX Shared Memory (shm)<br/>Zero-Copy Virtual Memory"| NODE_ROS2
+    MOD_04 <-->|"POSIX Sockets / ROS 2 Topics<br/>TDoA Vectors & RF Occupancy"| NODE_ROS2
+
+    %% Navigation to Middleware & Autonomy
+    MOD_01 -->|"Kinematic Pose & Spatial Transforms<br/>ROS 2 Topics / Velocity Vectors"| NODE_ROS2
+
+    %% Compute to Avionics Bridge
+    NODE_ROS2 <-->|"High-Speed UART / Ethernet<br/>MAVLink 2.0 / Micro-XRCE-DDS<br/>[Watchdog Heartbeats]"| NODE_PX4
+
+    %% Avionics Control & Actuation
+    NODE_PX4 -->|"Microsecond PWM Loops<br/>Motor Speed Commands"| NODE_PROP
+    NODE_PX4 -->|"Microsecond PWM / RS-485<br/>Control Surface Deflection"| NODE_SERVO
+
+    %% Effector Interlock
+    NODE_ROS2 -->|"Ballistic Trigger Coordinates<br/>& Wind Vectors"| MOD_06
+    NODE_PX4 -->|"Opto-Isolated Solid-State IO<br/>Dual-Redundant Logic Interlock"| MOD_06
+
+    %% Secure Communications
+    NODE_COMPUTE_HW -->|"Serialized Mission Intel<br/>High-Priority Imagery"| MOD_05
+    MOD_05 -->|"RS-422 Serial<br/>PAT Gyro Offsets"| MOD_02
+    MOD_05 -.->|"Automated Fallback Trigger<br/>on Optical Obscuration [Threshold TBD]"| NODE_SDR_FE
+
+    %% Air-to-Ground Tactical Links
+    MOD_05 ==>|"Directional Narrow-Beam Laser<br/>Free-Space Optical (FSO) Line-of-Sight"| EXT_OGT
+    NODE_SDR_FE -.->|"Encrypted Frequency-Hopping RF<br/>Backup Command & Status Link"| EXT_GCS
+
+    %% Cybersecurity Interlocks
+    NODE_ROT ==>|"Hardware-Enforced Cryptographic Gate<br/>Secure Boot & Memory Encryption Keys"| NODE_COMPUTE_HW
+    NODE_ROT ==>|"Tamper-Triggered Electrical Wipe<br/>Zero-Trace Memory Erasure Interlock"| NODE_PX4
+
+    %% Power and Structural Substrate Distribution
+    NODE_PMU -.->|"Regulated DC Voltage Rails<br/>[Electrical Budget Envelope TBD]"| NODE_COMPUTE_HW
+    NODE_PMU -.->|"High-Current Propulsion Bus<br/>[Discharge Rate TBD]"| NODE_PROP
+    NODE_AIRFRAME -.->|"Mechanical Monocoque Enclosure<br/>Low-RCS & Passive Thermal Housing"| DOM_PERCEPTION
+
+    %% -------------------------------------------------------------------------
+    %% LEGEND AND METADATA
+    %% -------------------------------------------------------------------------
+    subgraph LEGEND ["Architecture Diagram Legend & Verification Ledger"]
+        direction TB
+        LEG_CONF["─── Solid Line: Confirmed Documented Interface (REA-T1-OVERVIEW-2026-V1.0)"]
+        LEG_UNRES["- - - Dashed Line: Unresolved / Unspecified Interface Topology (Subject to Review)"]
+        LEG_OPT["═══ Double Line: Directional Free-Space Optical or Cryptographic Hard Boundary"]
+        LEG_STATUS["STATUS NOTE: Based strictly on REA-T1-OVERVIEW-2026-V1.0 & Task Order ADD-03.<br/>No speculative commercial drone architectures assumed."]
+    end
+
+    %% Class Styling for Visual Distinction
+    classDef confirmed fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef hardware fill:#0f172a,stroke:#fbbf24,stroke-width:2px,color:#f8fafc;
+    classDef boundary fill:#1e1e2f,stroke:#f43f5e,stroke-width:2px,stroke-dasharray: 5 5,color:#f8fafc;
+    classDef legend fill:#090d16,stroke:#64748b,stroke-width:1px,color:#cbd5e1;
+
+    class MOD_01,MOD_02,MOD_03,MOD_04,MOD_05,MOD_06 confirmed;
+    class NODE_COMPUTE_HW,NODE_ROS2,NODE_PX4,NODE_ROT confirmed;
+    class NODE_LIDAR,NODE_GPR,NODE_MIC,NODE_CBRN,NODE_IMU,NODE_SDR_FE,NODE_PROP,NODE_SERVO,NODE_AIRFRAME,NODE_PMU hardware;
+    class EXT_OGT,EXT_GCS boundary;
+    class TITLE_NODE,LEG_CONF,LEG_UNRES,LEG_OPT,LEG_STATUS legend;
