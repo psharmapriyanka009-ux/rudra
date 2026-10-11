@@ -11,4 +11,3 @@ Tactical Autonomous UAV Systems Engineering
   * [Day2/Day2_Task3_Task4_Training_Notes_and_Flowcharts.md](./Day2/Day2_Task3_Task4_Training_Notes_and_Flowcharts.md) — Master Flowcharts and Conceptual Engineering Notes (Tasks 3 & 4).
   * [Day2/SRS_Starter_Template_Day2_2026-10-11.md](./Day2/SRS_Starter_Template_Day2_2026-10-11.md) — Task 3 & 4 Primary Deliverable: 17-Section Markdown SRS Starter Template.
   * [Day2/Bidirectional_Traceability_Wireframe_Day2_2026-10-11.md](./Day2/Bidirectional_Traceability_Wireframe_Day2_2026-10-11.md) — Task 4 Deliverable: 16-Column Bidirectional Traceability Matrix Wireframe.
-  * [Day2/docs/](./Day2/docs/) — Documentation folder containing mirrored engineering deliverables.
